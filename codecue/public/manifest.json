@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "CodeCue",
+  "version": "1.0",
+  "description": "LeetCode AI assistant",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": ["https://api.groq.com/", "https://leetcode.com/*"],
+
+  "permissions": ["storage", "activeTab", "scripting"]
+}
