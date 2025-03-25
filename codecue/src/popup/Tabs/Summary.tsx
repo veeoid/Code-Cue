@@ -1,3 +1,4 @@
+// popup/Tabs/Summary.tsx
 import { useState } from "react";
 import { fetchFromGroq } from "../../api/groqClient";
 
@@ -16,8 +17,13 @@ ${question}`;
 
   return (
     <div>
-      <button onClick={getSummary}>Get Summary</button>
-      {summary && <pre style={{ whiteSpace: "pre-wrap" }}>{summary}</pre>}
+      <button onClick={getSummary}>Get Pseudocode</button>
+      {summary && (
+  <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+    <pre style={{ whiteSpace: "pre-wrap" }}>{summary}</pre>
+  </div>
+)}
+
     </div>
   );
 }

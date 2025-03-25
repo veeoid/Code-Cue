@@ -1,3 +1,4 @@
+// popup/Tabs/Hints.tsx
 import { useState } from "react";
 import { fetchFromGroq } from "../../api/groqClient";
 

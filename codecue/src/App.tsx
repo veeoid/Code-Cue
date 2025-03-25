@@ -48,7 +48,7 @@ export default function App() {
           className={`tab-button ${tab === "summary" ? "active" : ""}`}
           onClick={() => setTab("summary")}
         >
-          Summary
+           Give me Pseudocode
         </button>
         <button 
           className={`tab-button ${tab === "solution" ? "active" : ""}`}

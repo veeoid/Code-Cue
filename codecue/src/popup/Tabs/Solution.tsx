@@ -1,3 +1,4 @@
+// popup/Tabs/Solution.tsx
 import { useState } from "react";
 import { fetchFromGroq } from "../../api/groqClient";
 
@@ -13,7 +14,12 @@ export default function Solution({ question }: { question: string }) {
   return (
     <div>
       <button onClick={getSolution}>Get Python Solution</button>
-      {solution && <pre>{solution}</pre>}
+      {solution && (
+  <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+    <pre style={{ whiteSpace: "pre-wrap" }}>{solution}</pre>
+  </div>
+)}
+
     </div>
   );
 }
