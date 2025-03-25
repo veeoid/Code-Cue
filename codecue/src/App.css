@@ -1,42 +1,176 @@
+:root {
+  --primary: #646cff;
+  --primary-hover: #7b82ff;
+  --bg: #ffffff;
+  --text: #213547;
+  --border: #e2e8f0;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-700: #374151;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
 #root {
-  max-width: 1280px;
+  width: 350px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app-container {
+  padding: 16px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.textarea-container {
+  margin-bottom: 16px;
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.question-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: none;
+  background: transparent;
+  color: var(--text);
 }
 
-.card {
-  padding: 2em;
+.question-textarea::placeholder {
+  color: #94a3b8;
 }
 
-.read-the-docs {
-  color: #888;
+.question-textarea:focus {
+  outline: none;
+}
+
+.textarea-container::before {
+  content: "LeetCode Question";
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tab-navigation {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 4px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.tab-button.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+.content-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Hint styles */
+.hints-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hint-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.hint-button {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: var(--gray-100);
+  border: none;
+  text-align: left;
+  font-weight: 500;
+  color: var(--gray-700);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.hint-button:hover {
+  background-color: var(--gray-200);
+}
+
+.hint-button.revealed {
+  background-color: var(--primary);
+  color: white;
+}
+
+.hint-content {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
+
+.hint-content.revealed {
+  height: auto;
+  padding: 12px 16px;
+  background-color: white;
+  border-top: 1px solid var(--border);
+}
+
+.hint-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.chevron-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.chevron-icon.revealed {
+  transform: rotate(180deg);
 }

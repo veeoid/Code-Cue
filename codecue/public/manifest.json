@@ -3,6 +3,11 @@
   "name": "CodeCue",
   "version": "1.0",
   "description": "LeetCode AI assistant",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
   "action": {
     "default_popup": "index.html"
   },

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Hints from "./popup/Tabs/Hints";
 import Summary from "./popup/Tabs/Summary";
 import Solution from "./popup/Tabs/Solution";
+import "./App.css";
 
 export default function App() {
   const [tab, setTab] = useState("hints");
@@ -26,20 +27,38 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ padding: "10px", width: "300px" }}>
-      <textarea
-        placeholder="Paste LeetCode question here"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        rows={4}
-        style={{ width: "100%" }}
-      />
-      <div style={{ margin: "10px 0" }}>
-        <button onClick={() => setTab("hints")}>Hints</button>
-        <button onClick={() => setTab("summary")}>Summary</button>
-        <button onClick={() => setTab("solution")}>Solution</button>
+    <div className="app-container">
+      <div className="textarea-container">
+        <textarea
+          className="question-textarea"
+          placeholder="Paste LeetCode question here..."
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+        />
       </div>
-      <div>
+      
+      <div className="tab-navigation">
+        <button 
+          className={`tab-button ${tab === "hints" ? "active" : ""}`}
+          onClick={() => setTab("hints")}
+        >
+          Hints
+        </button>
+        <button 
+          className={`tab-button ${tab === "summary" ? "active" : ""}`}
+          onClick={() => setTab("summary")}
+        >
+          Summary
+        </button>
+        <button 
+          className={`tab-button ${tab === "solution" ? "active" : ""}`}
+          onClick={() => setTab("solution")}
+        >
+          Solution
+        </button>
+      </div>
+
+      <div className="content-section">
         {tab === "hints" && <Hints question={question} />}
         {tab === "summary" && <Summary question={question} />}
         {tab === "solution" && <Solution question={question} />}
