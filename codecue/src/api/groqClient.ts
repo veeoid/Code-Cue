@@ -1,6 +1,7 @@
 export async function fetchFromGroq(prompt: string) {
     try {
-      const res = await fetch("http://localhost:3000/api/groq", {
+        const res = await fetch("https://code-iyif7dset-veeoids-projects.vercel.app/api/groq", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json"
