@@ -79,3 +79,4 @@ Click “Load unpacked”
 Select the dist/ folder from extension/
 
 Open any LeetCode problem → Click on the CodeCue icon → Try hints, summary, or solution!
+
