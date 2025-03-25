@@ -9,9 +9,18 @@ export default function App() {
   const [question, setQuestion] = useState("");
 
   useEffect(() => {
+    // Load from local storage
     chrome.storage.local.get("leetcodeQuestion", (result) => {
       if (result.leetcodeQuestion) {
         setQuestion(result.leetcodeQuestion);
+      }
+    });
+
+    // Listen for real-time updates
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.type === "LEETCODE_QUESTION") {
+        console.log("📥 Popup received updated question:", message.payload);
+        setQuestion(message.payload);
       }
     });
   }, []);
@@ -25,7 +34,7 @@ export default function App() {
         rows={4}
         style={{ width: "100%" }}
       />
-      <div>
+      <div style={{ margin: "10px 0" }}>
         <button onClick={() => setTab("hints")}>Hints</button>
         <button onClick={() => setTab("summary")}>Summary</button>
         <button onClick={() => setTab("solution")}>Solution</button>
