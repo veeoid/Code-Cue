@@ -1,4 +1,4 @@
-﻿<h1 align="center">🧠 CodeCue – Smart LeetCode Assistant</h1>
+<h1 align="center">🧠 CodeCue – Smart LeetCode Assistant</h1>
 <p align="center">
   A browser extension that provides smart hints, structured algorithm summaries, and Python solutions for LeetCode problems using a free LLM (Groq) via a secure backend proxy.
 </p>
@@ -25,7 +25,7 @@
 
 - **Frontend**: React + TypeScript + Vite (Chrome Extension)
 - **Backend**: Node.js + Express + Groq API
-- **Hosting**: Supports Render, Vercel, Railway
+- **Hosting**: Vercel (Supports others like Render, Railway too)
 - **Language Model**: LLaMA 3 via Groq
 
 ---
@@ -36,46 +36,70 @@
 
 ```bash
 git clone https://github.com/veeoid/Code-Cue.git
-cd codecue
+cd Code-Cue
 ```
 
-## 🔐 2. Set Up Backend Proxy
+### 2️⃣ Set Up Backend Proxy
 
-```
+```bash
 cd proxy-server
 npm install
 ```
 
-Create a .env file:
+Create a `.env` file:
 
-```
+```env
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-Start the proxy:
+Start the proxy locally (if testing):
 
-```
+```bash
 node server.js
 ```
 
-This starts the proxy server at http://localhost:3000/api/groq
+Or deploy to Vercel and set the environment variable there.
 
-## 🧩 3. Set Up Chrome Extension
+### 3️⃣ Set Up Chrome Extension
 
-```
+```bash
 cd ../codecue
 npm install
 npm run build
 ```
 
-## 🧪 4. Load Extension in Chrome
+### 4️⃣ Load Extension in Chrome
 
-Go to chrome://extensions
+- Go to `chrome://extensions`
+- Enable **Developer Mode**
+- Click “**Load unpacked**”
+- Select the `dist/` folder from `codecue`
 
-Enable Developer Mode
+---
 
-Click “Load unpacked”
+## 🚀 How It Works
 
-Select the dist/ folder from extension/
+- The extension detects the LeetCode problem you're on
+- Sends a prompt to your backend (`/api/groq`)
+- Backend uses Groq API (LLaMA3) to fetch intelligent hints or summaries
+- Response is shown instantly in your popup tab
 
-Open any LeetCode problem → Click on the CodeCue icon → Try hints, summary, or solution!
+---
+
+## 🔒 API Key Security
+
+- Your Groq API Key is **never exposed** in frontend code
+- Stored securely via Vercel’s **Environment Variables**
+
+---
+
+## 📦 Deploy to Vercel
+
+- Link this GitHub repo to Vercel
+- Set `proxy-server` as **Root Directory** in settings
+- Add environment variable: `GROQ_API_KEY`
+- Vercel auto-deploys on every commit
+
+---
+
+
