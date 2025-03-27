@@ -23,5 +23,5 @@
   ],
   "host_permissions": ["https://api.groq.com/", "https://leetcode.com/*"],
 
-  "permissions": ["storage", "activeTab", "scripting"]
+  "permissions": ["storage"]
 }
