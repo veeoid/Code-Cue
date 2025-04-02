@@ -36,21 +36,21 @@ export default function App() {
           onChange={(e) => setQuestion(e.target.value)}
         />
       </div>
-      
+
       <div className="tab-navigation">
-        <button 
+        <button
           className={`tab-button ${tab === "hints" ? "active" : ""}`}
           onClick={() => setTab("hints")}
         >
           Hints
         </button>
-        <button 
+        <button
           className={`tab-button ${tab === "summary" ? "active" : ""}`}
           onClick={() => setTab("summary")}
         >
-           Give me Pseudocode
+          Give me Pseudocode
         </button>
-        <button 
+        <button
           className={`tab-button ${tab === "solution" ? "active" : ""}`}
           onClick={() => setTab("solution")}
         >

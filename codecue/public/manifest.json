@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "CodeCue",
-  "version": "1.0",
-  "description": "LeetCode AI assistant",
+  "name": "CodeCue – LeetCode AI Hints, Algorithm & Python Solutions Assistant",
+  "version": "1.0.1",
+
+  "description": "AI-powered Chrome extension for solving LeetCode problems with hints, pseudocode, and Python solutions.",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
