@@ -40,6 +40,32 @@ async function extractLeetCodeQuestionWithRetries(retries = 5, delay = 1000): Pr
   return null;
 }
 
+function tryExtractUserCode() {
+  const codeLines: string[] = [];
+  const lineElements = document.querySelectorAll(".view-line");
+
+  lineElements.forEach((line) => {
+    const text = (line as HTMLElement).innerText.trim();
+    if (text) codeLines.push(text);
+  });
+
+  const fullCode = codeLines.join("\n").trim();
+  if (fullCode.length > 0) {
+    console.log("🧠 Extracted user code from LeetCode editor:", fullCode);
+
+    if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({
+        type: "LEETCODE_USER_CODE",
+        payload: fullCode,
+      });
+    } else {
+      console.warn("⚠️ chrome.runtime.sendMessage is not available");
+    }
+  }
+}
+
+
+
 let lastUrl = location.href;
 let lastQuestion = "";
 
@@ -60,6 +86,7 @@ function trySendQuestion() {
 
 // Initial run
 trySendQuestion();
+tryExtractUserCode(); // ✅ Also try grabbing code on page load
 
 // Detect URL changes (SPA navigation)
 const observer = new MutationObserver(() => {
@@ -67,6 +94,7 @@ const observer = new MutationObserver(() => {
     lastUrl = location.href;
     setTimeout(() => {
       trySendQuestion();
+      tryExtractUserCode(); // ✅ Recheck user code too
     }, 2000);
   }
 });

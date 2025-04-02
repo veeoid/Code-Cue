@@ -1,7 +1,10 @@
+// File: src/App.tsx
+
 import { useEffect, useState } from "react";
 import Hints from "./popup/Tabs/Hints";
 import Summary from "./popup/Tabs/Summary";
 import Solution from "./popup/Tabs/Solution";
+import Analysis from "./popup/Tabs/Analysis";
 import { fetchFromGroq } from "./api/groqClient";
 import "./App.css";
 
@@ -10,19 +13,31 @@ export default function App() {
   const [question, setQuestion] = useState("");
   const [pseudocode, setPseudocode] = useState("");
   const [solution, setSolution] = useState("");
+  const [userCode, setUserCode] = useState(""); // 👈 new state for user code
 
   useEffect(() => {
-    chrome.storage.local.get("leetcodeQuestion", (result) => {
-      if (result.leetcodeQuestion) {
-        setQuestion(result.leetcodeQuestion);
+    chrome.storage.local.get(
+      ["leetcodeQuestion", "leetcodeUserCode"],
+      (result) => {
+        if (result.leetcodeQuestion) {
+          setQuestion(result.leetcodeQuestion);
+        }
+        if (result.leetcodeUserCode) {
+          setUserCode(result.leetcodeUserCode);
+        }
       }
-    });
+    );
 
     chrome.runtime.onMessage.addListener((message) => {
       if (message.type === "LEETCODE_QUESTION") {
         setQuestion(message.payload);
         setPseudocode("");
         setSolution("");
+      }
+
+      if (message.type === "LEETCODE_USER_CODE") {
+        console.log(message.payload);
+        setUserCode(message.payload);
       }
     });
   }, []);
@@ -37,7 +52,7 @@ export default function App() {
 
   const fetchSolution = async () => {
     if (!solution && question) {
-      const prompt = `Give me a complete Python solution for the following LeetCode problem inside a 'class Solution' using proper indentation and method definitions. Also provide a clear explanation in plain English below the code:\n\n${question}`;
+      const prompt = `Give me a Python solution for the following LeetCode problem with explanation: ${question}`;
       const response = await fetchFromGroq(prompt);
       setSolution(response);
     }
@@ -79,12 +94,21 @@ export default function App() {
         >
           Solution
         </button>
+        <button
+          className={`tab-button ${tab === "analysis" ? "active" : ""}`}
+          onClick={() => handleTabSwitch("analysis")}
+        >
+          Analyze My Code
+        </button>
       </div>
 
       <div className="content-section">
         {tab === "hints" && <Hints question={question} />}
         {tab === "summary" && <Summary response={pseudocode} />}
         {tab === "solution" && <Solution response={solution} />}
+        {tab === "analysis" && <Analysis code={userCode} question={question} />}
+
+        {/* ✅ Pass extracted user code */}
       </div>
     </div>
   );
