@@ -1,29 +1,20 @@
-// popup/Tabs/Summary.tsx
-import { useState } from "react";
-import { fetchFromGroq } from "../../api/groqClient";
+interface SummaryProps {
+  response: string;
+}
 
-export default function Summary({ question }: { question: string }) {
-  const [summary, setSummary] = useState("");
-
-  const getSummary = async () => {
-    const prompt = `Explain the algorithm to solve the following LeetCode question in a brief and structured format. Use bullet points or step-wise format. Avoid unnecessary introductions or commentary. Use simple language.
-
-Question:
-${question}`;
-
-    const response = await fetchFromGroq(prompt);
-    setSummary(response);
-  };
-
+export default function Summary({ response }: SummaryProps) {
   return (
-    <div>
-      <button onClick={getSummary}>Get Pseudocode</button>
-      {summary && (
-  <div style={{ overflowX: "auto", maxWidth: "100%" }}>
-    <pre style={{ whiteSpace: "pre-wrap" }}>{summary}</pre>
-  </div>
-)}
-
+    <div
+      style={{
+        marginTop: "10px",
+        background: "#f8f8f8",
+        padding: "10px",
+        borderRadius: "8px",
+      }}
+    >
+      <pre style={{ whiteSpace: "pre-wrap", overflowX: "auto" }}>
+        <code>{response}</code>
+      </pre>
     </div>
   );
 }

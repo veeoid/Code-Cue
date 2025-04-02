@@ -1,30 +1,53 @@
-// File: src/popup/App.tsx
 import { useEffect, useState } from "react";
 import Hints from "./popup/Tabs/Hints";
 import Summary from "./popup/Tabs/Summary";
 import Solution from "./popup/Tabs/Solution";
+import { fetchFromGroq } from "./api/groqClient";
 import "./App.css";
 
 export default function App() {
   const [tab, setTab] = useState("hints");
   const [question, setQuestion] = useState("");
+  const [pseudocode, setPseudocode] = useState("");
+  const [solution, setSolution] = useState("");
 
   useEffect(() => {
-    // Load from local storage
     chrome.storage.local.get("leetcodeQuestion", (result) => {
       if (result.leetcodeQuestion) {
         setQuestion(result.leetcodeQuestion);
       }
     });
 
-    // Listen for real-time updates
     chrome.runtime.onMessage.addListener((message) => {
       if (message.type === "LEETCODE_QUESTION") {
-        console.log("📥 Popup received updated question:", message.payload);
         setQuestion(message.payload);
+        setPseudocode("");
+        setSolution("");
       }
     });
   }, []);
+
+  const fetchPseudocode = async () => {
+    if (!pseudocode && question) {
+      const prompt = `Explain the algorithm to solve the following LeetCode question in a brief and structured format. Use bullet points or step-wise format. Avoid unnecessary introductions or commentary. Use simple language.\n\nQuestion:\n${question}`;
+      const response = await fetchFromGroq(prompt);
+      setPseudocode(response);
+    }
+  };
+
+  const fetchSolution = async () => {
+    if (!solution && question) {
+      const prompt = `Give me a complete Python solution for the following LeetCode problem inside a 'class Solution' using proper indentation and method definitions. Also provide a clear explanation in plain English below the code:\n\n${question}`;
+      const response = await fetchFromGroq(prompt);
+      setSolution(response);
+    }
+  };
+
+  const handleTabSwitch = (nextTab: string) => {
+    setTab(nextTab);
+    if (nextTab === "summary") fetchPseudocode();
+    if (nextTab === "solution") fetchSolution();
+  };
 
   return (
     <div className="app-container">
@@ -40,19 +63,19 @@ export default function App() {
       <div className="tab-navigation">
         <button
           className={`tab-button ${tab === "hints" ? "active" : ""}`}
-          onClick={() => setTab("hints")}
+          onClick={() => handleTabSwitch("hints")}
         >
           Hints
         </button>
         <button
           className={`tab-button ${tab === "summary" ? "active" : ""}`}
-          onClick={() => setTab("summary")}
+          onClick={() => handleTabSwitch("summary")}
         >
           Give me Pseudocode
         </button>
         <button
           className={`tab-button ${tab === "solution" ? "active" : ""}`}
-          onClick={() => setTab("solution")}
+          onClick={() => handleTabSwitch("solution")}
         >
           Solution
         </button>
@@ -60,8 +83,8 @@ export default function App() {
 
       <div className="content-section">
         {tab === "hints" && <Hints question={question} />}
-        {tab === "summary" && <Summary question={question} />}
-        {tab === "solution" && <Solution question={question} />}
+        {tab === "summary" && <Summary response={pseudocode} />}
+        {tab === "solution" && <Solution response={solution} />}
       </div>
     </div>
   );

@@ -1,71 +1,128 @@
-import { useState } from "react";
-import { fetchFromGroq } from "../../api/groqClient";
+// File: src/popup/Tabs/Solution.tsx
 
-export default function Solution({ question }: { question: string }) {
-  const [solution, setSolution] = useState("");
-  const [explanation, setExplanation] = useState("");
+import { useState } from "react";
+
+interface SolutionProps {
+  response: string;
+}
+
+export default function Solution({ response }: SolutionProps) {
   const [copied, setCopied] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  const getSolution = async () => {
-    const promptForCode = `Just return a valid Python function wrapped in a class Solution for the following LeetCode problem. Do NOT include any explanation or markdown formatting like triple backticks. Do not include the word 'Explanation' or anything extra.
+  const extractParts = (response: string) => {
+    const parts = response.split("```");
+    const cleanedParts = parts.map((p: string) => p.replace(/```/g, "").trim());
 
-Question:
-${question}`;
+    let codeBlock =
+      cleanedParts.find((p: string) => p.includes("class Solution")) || "";
+    if (!codeBlock) {
+      const rawDef = cleanedParts.find((p: string) => p.includes("def ")) || "";
+      if (rawDef) {
+        const indented = rawDef
+          .split("\n")
+          .map((line) => (line.trim() !== "" ? "    " + line : ""))
+          .join("\n");
+        codeBlock = `class Solution:\n${indented}`;
+      }
+    }
 
-    const promptForExplanation = `Explain the approach and logic behind solving this LeetCode problem in simple terms. Use clear bullet points or concise paragraphs. Do not include any code or markdown formatting.
+    codeBlock = codeBlock.replace(/^python\n?/i, "");
 
-Question:
-${question}`;
+    const explanationPart = cleanedParts.find(
+      (p: string) =>
+        !p.includes("class Solution") &&
+        !p.includes("def ") &&
+        !/^python\b|\bpython solution\b/i.test(p.trim()) &&
+        p.length > 40
+    );
 
-    const [codeResponse, explanationResponse] = await Promise.all([
-      fetchFromGroq(promptForCode),
-      fetchFromGroq(promptForExplanation),
-    ]);
-
-    setSolution(codeResponse);
-    setExplanation(explanationResponse);
+    return {
+      code: codeBlock.trim(),
+      explanation: explanationPart?.trim() || "",
+    };
   };
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(solution);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy:", err);
-    }
+  const { code, explanation } = extractParts(response);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
     <div>
-      <button onClick={getSolution}>Get Python Solution</button>
+      {code && (
+        <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "5px",
+            }}
+          >
+            <strong>Python Code:</strong>
+            <button
+              onClick={handleCopy}
+              style={{
+                background: "#333",
+                color: "#fff",
+                border: "none",
+                borderRadius: "5px",
+                padding: "5px 10px",
+                fontSize: "12px",
+                cursor: "pointer",
+              }}
+            >
+              📋 {copied ? "Copied!" : "Copy Code"}
+            </button>
+          </div>
 
-      {solution && (
-        <div style={{ overflowX: "auto", maxWidth: "100%", marginTop: "10px" }}>
-          <button onClick={copyToClipboard} style={{ marginBottom: "5px" }}>
-            {copied ? "Copied!" : "Copy Code"}
-          </button>
-          <pre style={{ whiteSpace: "pre-wrap", fontSize: "14px" }}>
-            {solution}
+          <pre
+            style={{
+              background: "#f4f4f4",
+              padding: "10px",
+              borderRadius: "8px",
+              overflowX: "auto",
+              fontSize: "14px",
+              whiteSpace: "pre-wrap",
+            }}
+          >
+            <code>{code}</code>
           </pre>
+        </div>
+      )}
 
-          {explanation && (
-            <div style={{ marginTop: "10px" }}>
-              <button onClick={() => setShowExplanation(!showExplanation)}>
-                {showExplanation ? "Hide Explanation" : "Show Explanation"}
-              </button>
-              {showExplanation && (
-                <div
-                  style={{
-                    marginTop: "10px",
-                    fontSize: "14px",
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {explanation}
-                </div>
-              )}
+      {explanation && (
+        <div style={{ marginTop: "10px" }}>
+          <button
+            onClick={() => setShowExplanation((prev) => !prev)}
+            style={{
+              background: "#eee",
+              border: "1px solid #ccc",
+              padding: "6px 12px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              fontSize: "12px",
+            }}
+          >
+            {showExplanation ? "Hide Explanation" : "Show Explanation"}
+          </button>
+          {showExplanation && (
+            <div
+              style={{
+                background: "#fdfdfd",
+                padding: "12px",
+                borderRadius: "6px",
+                marginTop: "10px",
+                fontSize: "14px",
+                border: "1px solid #e0e0e0",
+                whiteSpace: "pre-line",
+              }}
+            >
+              {explanation}
             </div>
           )}
         </div>
