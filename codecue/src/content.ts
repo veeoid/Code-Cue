@@ -40,29 +40,59 @@ async function extractLeetCodeQuestionWithRetries(retries = 5, delay = 1000): Pr
   return null;
 }
 
-function tryExtractUserCode() {
-  const codeLines: string[] = [];
-  const lineElements = document.querySelectorAll(".view-line");
-
-  lineElements.forEach((line) => {
-    const text = (line as HTMLElement).innerText.trim();
-    if (text) codeLines.push(text);
-  });
-
-  const fullCode = codeLines.join("\n").trim();
-  if (fullCode.length > 0) {
-    console.log("🧠 Extracted user code from LeetCode editor:", fullCode);
-
-    if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
-      chrome.runtime.sendMessage({
-        type: "LEETCODE_USER_CODE",
-        payload: fullCode,
-      });
-    } else {
-      console.warn("⚠️ chrome.runtime.sendMessage is not available");
+async function tryExtractUserCode(retries = 8, delay = 2000): Promise<void> {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    // ✅ Scroll the editor into view to force Monaco to render hidden lines
+    const editor = document.querySelector(".monaco-editor") as HTMLElement;
+    if (editor) {
+      editor.scrollIntoView({ behavior: "smooth", block: "center" });
     }
+
+    const lineElements = document.querySelectorAll(".view-line");
+
+    const codeLines: string[] = [];
+    lineElements.forEach((line) => {
+      const text = (line as HTMLElement).textContent || "";
+      codeLines.push(text);
+    });
+
+    const fullCode = codeLines.join("\n").trim();
+
+    const hasReturn = codeLines.some((line) => line.includes("return"));
+    const endsWithWhile = codeLines[codeLines.length - 1]?.trim() === "while True:";
+    const lineCount = codeLines.length;
+
+    console.log(`🔍 Attempt ${attempt + 1}: lineCount = ${lineCount}, hasReturn = ${hasReturn}, endsWithWhile = ${endsWithWhile}`);
+
+    const isCodeReady =
+      fullCode.length > 0 &&
+      (lineCount >= 10 && (hasReturn || !endsWithWhile) || lineCount >= 15);
+
+    if (isCodeReady) {
+      console.log("✅ Extracted user code:\n", fullCode);
+
+      if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({
+          type: "LEETCODE_USER_CODE",
+          payload: fullCode,
+        });
+      } else {
+        console.warn("⚠️ chrome.runtime.sendMessage is not available");
+      }
+
+      return;
+    }
+
+    console.warn(
+      `⏳ Code not ready (attempt ${attempt + 1}). Retrying in ${delay / 1000}s...`
+    );
+    await new Promise((res) => setTimeout(res, delay));
   }
+
+  console.error("❌ Failed to extract complete user code after retries.");
 }
+
+
 
 
 

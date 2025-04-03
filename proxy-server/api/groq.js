@@ -48,7 +48,7 @@ export default async function handler(req, res) {
         },
         body: JSON.stringify({
           // model: "llama3-70b-8192",
-          model: "llama-3.3-70b-versatile",
+          model: "deepseek-r1-distill-llama-70b",
           messages: [
             { role: "system", content: "You are a helpful assistant." },
             { role: "user", content: prompt },

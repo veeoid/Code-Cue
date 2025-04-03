@@ -13,7 +13,6 @@ export default function App() {
   const [question, setQuestion] = useState("");
   const [pseudocode, setPseudocode] = useState("");
   const [solution, setSolution] = useState("");
-  const [userCode, setUserCode] = useState(""); // 👈 new state for user code
 
   useEffect(() => {
     chrome.storage.local.get(
@@ -21,9 +20,6 @@ export default function App() {
       (result) => {
         if (result.leetcodeQuestion) {
           setQuestion(result.leetcodeQuestion);
-        }
-        if (result.leetcodeUserCode) {
-          setUserCode(result.leetcodeUserCode);
         }
       }
     );
@@ -33,11 +29,6 @@ export default function App() {
         setQuestion(message.payload);
         setPseudocode("");
         setSolution("");
-      }
-
-      if (message.type === "LEETCODE_USER_CODE") {
-        console.log(message.payload);
-        setUserCode(message.payload);
       }
     });
   }, []);
@@ -106,7 +97,7 @@ export default function App() {
         {tab === "hints" && <Hints question={question} />}
         {tab === "summary" && <Summary response={pseudocode} />}
         {tab === "solution" && <Solution response={solution} />}
-        {tab === "analysis" && <Analysis code={userCode} question={question} />}
+        {tab === "analysis" && <Analysis question={question} />}
 
         {/* ✅ Pass extracted user code */}
       </div>
